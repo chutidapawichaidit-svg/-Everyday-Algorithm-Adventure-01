@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <title>ผจญภัยอัลกอริทึมในชีวิตประจำวัน | Everyday Algorithm Adventure โดย Gifted NK, 2026</title>
+    <!-- Google Fonts: Kanit & Mali -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=Mali:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        kanit: ['Kanit', 'sans-serif'],
+                        mali: ['Mali', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+        }
+        .glass-panel-dark {
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.85);
+            transform: translateY(-2px);
+        }
+        .glass-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Pastel backgrounds */
+        .bg-pastel-sky {
+            background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+        }
+        .world-bg-1 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); } /* Home */
+        .world-bg-2 { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); } /* School */
+        .world-bg-3 { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); } /* Community */
+        .world-bg-4 { background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); } /* City */
+        .world-bg-5 { background: linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%); } /* Castle */
+    </style>
+</head>
+<body class="bg-slate-900 flex items-center justify-center min-h-screen p-0 md:p-4 overflow-hidden select-none font-kanit">
+
+    <!-- Main Mobile Container (480px width constraint) -->
+    <div id="game-container" class="relative w-full max-w-[480px] h-[100vh] md:h-[850px] md:rounded-[40px] shadow-2xl overflow-hidden bg-pastel-sky flex flex-col transition-all duration-500 border-4 border-white/40">
+        
+        <!-- CANVAS FOR CONFETTI (ตอบถูก) -->
+        <canvas id="confetti-canvas" class="absolute inset-0 pointer-events-none z-50 w-full h-full"></canvas>
+
+        <!-- ==================== SCREEN 1: SPLASH SCREEN ==================== -->
+        <div id="screen-splash" class="absolute inset-0 flex flex-col justify-between p-6 z-10 transition-transform duration-500">
+            <!-- Top Section -->
+            <div class="flex flex-col items-center mt-12 text-center">
+                <!-- SVG Game Mascot / Logo -->
+                <div class="w-32 h-32 mb-4 animate-float">
+                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-lg">
+                        <!-- Cute Robot Face -->
+                        <rect x="15" y="25" width="70" height="55" rx="20" fill="#4FD1C5" />
+                        <rect x="20" y="30" width="60" height="45" rx="15" fill="#E6FFFA" />
+                        <!-- Eyes -->
+                        <circle cx="38" cy="50" r="8" fill="#2D3748" />
+                        <circle cx="62" cy="50" r="8" fill="#2D3748" />
+                        <!-- Eye Highlights -->
+                        <circle cx="40" cy="48" r="3" fill="white" />
+                        <circle cx="64" cy="48" r="3" fill="white" />
+                        <!-- Cheeks -->
+                        <circle cx="28" cy="62" r="5" fill="#FF8093" opacity="0.6" />
+                        <circle cx="72" cy="62" r="5" fill="#FF8093" opacity="0.6" />
+                        <!-- Mouth (Smile) -->
+                        <path d="M 42 60 Q 50 68 58 60" stroke="#2D3748" stroke-width="4" stroke-linecap="round" fill="none" />
+                        <!-- Antennas -->
+                        <rect x="46" y="10" width="8" height="15" rx="4" fill="#319795" />
+                        <circle cx="50" cy="8" r="7" fill="#ED8936" class="animate-pulse" />
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-teal-800 drop-shadow-sm font-mali tracking-wide">ผจญภัยอัลกอริทึม</h1>
+                <p class="text-sm font-medium text-teal-700/80 mt-1 uppercase tracking-wider font-mali">Everyday Algorithm Adventure</p>
+                <span class="mt-4 px-4 py-1 text-xs font-semibold bg-white/60 text-teal-800 rounded-full border border-teal-200/50 shadow-sm">
+                    🚀 เรียนรู้การคิดเป็นขั้นตอนสำหรับเด็กๆ
+                </span>
+            </div>
+
+            <!-- Middle / Features Section -->
+            <div class="glass-panel rounded-2xl p-4 mx-2 text-center text-teal-900/90 space-y-2 text-sm">
+                <div class="font-bold text-base text-teal-800">🌟 สิ่งที่จะได้เรียนรู้:</div>
+                <div class="grid grid-cols-2 gap-2 text-left text-xs">
+                    <div class="flex items-center gap-1">✅ ลำดับขั้นตอน (Sequence)</div>
+                    <div class="flex items-center gap-1">🧠 การแก้ไขปัญหา</div>
+                    <div class="flex items-center gap-1">🤖 คิดแบบคอมพิวเตอร์</div>
+                    <div class="flex items-center gap-1">🏡 เหตุการณ์รอบตัว</div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="mb-12 flex flex-col items-center">
+                <button onclick="changeScreen('screen-char-select')" class="w-full max-w-xs py-4 px-8 bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold text-xl rounded-2xl shadow-lg shadow-orange-300/50 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 font-mali">
+                    เริ่มเกมเลย! 🎮
+                </button>
+                <p class="text-xs text-teal-800/60 mt-3">เวอร์ชัน 1.2.0 • เหมาะสำหรับอายุ 6-12 ปี</p>
+            </div>
+        </div>
+
+
+        <!-- ==================== SCREEN 2: CHARACTER SELECT ==================== -->
+        <div id="screen-char-select" class="absolute inset-0 flex flex-col justify-between p-6 z-10 transition-transform duration-500 translate-x-full">
+            <!-- Header -->
+            <div class="mt-4">
+                <button onclick="changeScreen('screen-splash')" class="glass-btn p-2 rounded-xl text-teal-800 flex items-center justify-center w-10 h-10">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <h2 class="text-2xl font-bold text-teal-800 text-center mt-2 font-mali">สร้างฮีโร่ของคุณ 🌟</h2>
+                <p class="text-center text-teal-700/80 text-sm">พิมพ์ชื่อและเลือกตัวละครที่ชอบเลย</p>
+            </div>
+
+            <!-- Form -->
+            <div class="my-auto space-y-6">
+                <!-- Name Input -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-teal-800 ml-2">ชื่อของคุณ:</label>
+                    <input type="text" id="player-name-input" value="กัปตันน้อย" placeholder="พิมพ์ชื่อตรงนี้..." class="w-full px-4 py-3 rounded-2xl border-2 border-teal-300/50 bg-white/80 text-teal-800 focus:outline-none focus:border-teal-500 text-lg shadow-inner font-semibold" maxlength="12">
+                </div>
+
+                <!-- Avatar grid -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-teal-800 ml-2">เลือกตัวละคร (Avatar):</label>
+                    <div class="grid grid-cols-4 gap-2" id="avatar-grid">
+                        <!-- Boy -->
+                        <div onclick="selectAvatar('boy')" id="avatar-boy" class="avatar-card border-4 border-teal-400 bg-white/90 p-2 rounded-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all text-center">
+                            <div class="w-full aspect-square mb-1" id="svg-avatar-boy"></div>
+                            <span class="text-xs font-bold text-teal-800">เด็กชาย</span>
+                        </div>
+                        <!-- Girl -->
+                        <div onclick="selectAvatar('girl')" id="avatar-girl" class="avatar-card border-4 border-transparent bg-white/60 p-2 rounded-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all text-center">
+                            <div class="w-full aspect-square mb-1" id="svg-avatar-girl"></div>
+                            <span class="text-xs font-bold text-teal-800">เด็กหญิง</span>
+                        </div>
+                        <!-- Robot -->
+                        <div onclick="selectAvatar('robot')" id="avatar-robot" class="avatar-card border-4 border-transparent bg-white/60 p-2 rounded-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all text-center">
+                            <div class="w-full aspect-square mb-1" id="svg-avatar-robot"></div>
+                            <span class="text-xs font-bold text-teal-800">หุ่นยนต์</span>
+                        </div>
+                        <!-- Cat -->
+                        <div onclick="selectAvatar('cat')" id="avatar-cat" class="avatar-card border-4 border-transparent bg-white/60 p-2 rounded-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all text-center">
+                            <div class="w-full aspect-square mb-1" id="svg-avatar-cat"></div>
+                            <span class="text-xs font-bold text-teal-800">เจ้าเหมียว</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Button -->
+            <div class="mb-8 text-center">
+                <button onclick="confirmCharacter()" class="w-full py-4 px-8 bg-gradient-to-r from-teal-400 to-emerald-500 text-white font-bold text-xl rounded-2xl shadow-lg shadow-teal-300/50 hover:scale-105 active:scale-95 transition-all font-mali">
+                    บันทึกและไปต่อ! 🗺️
+                </button>
+            </div>
+        </div>
+
+
+        <!-- ==================== SCREEN 3: MAP SCREEN ==================== -->
+        <div id="screen-map" class="absolute inset-0 flex flex-col justify-between p-4 z-10 transition-transform duration-500 translate-x-full">
+            <!-- Header (User Status Bar) -->
+            <div class="glass-panel rounded-2xl p-3 flex justify-between items-center mt-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-white/80 rounded-full border border-teal-300 p-1" id="map-user-avatar">
+                        <!-- Dynamic Avatar SVG inserted here -->
+                    </div>
+                    <div>
+                        <div class="text-xs text-teal-800/80">ผู้เล่น</div>
+                        <div class="text-sm font-bold text-teal-900 leading-none" id="map-user-name">กัปตันน้อย</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Gold -->
+                    <div class="flex items-center gap-1 bg-yellow-100/80 px-2 py-1 rounded-full border border-yellow-300">
+                        <span class="text-base">🪙</span>
+                        <span class="text-xs font-bold text-yellow-700" id="map-user-gold">0</span>
+                    </div>
+                    <!-- Stars -->
+                    <div class="flex items-center gap-1 bg-indigo-100/80 px-2 py-1 rounded-full border border-indigo-300">
+                        <span class="text-base">⭐</span>
+                        <span class="text-xs font-bold text-indigo-700" id="map-user-stars">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Content Scroll Area -->
+            <div class="my-3 flex-1 overflow-y-auto no-scrollbar rounded-3xl relative p-2" id="map-scroll-area">
+                <h3 class="text-center text-teal-900 font-bold text-lg mb-4 font-mali">🗺️ เลือกด่านผจญภัย</h3>
+                
+                <!-- World Map Timeline Wrapper -->
+                <div class="relative pl-6 pr-2 space-y-8 py-4">
+                    <!-- Progress Line background -->
+                    <div class="absolute left-10 top-8 bottom-8 w-1.5 bg-dashed bg-white/40 rounded"></div>
+                    <div class="absolute left-10 top-8 bottom-8 w-1.5 border-l-2 border-dashed border-teal-400/60"></div>
+
+                    <!-- World 1: บ้านสุขสันต์ (1-3) -->
+                    <div class="space-y-4">
+                        <div class="text-xs font-bold bg-rose-400 text-white px-3 py-1 rounded-full inline-block shadow-sm">
+                            🏡 โลกที่ 1: บ้านแสนอบอุ่น
+                        </div>
+                        <div class="space-y-3" id="world-1-nodes"></div>
+                    </div>
+
+                    <!-- World 2: โรงเรียนสุดสนุก (4-6) -->
+                    <div class="space-y-4">
+                        <div class="text-xs font-bold bg-amber-400 text-white px-3 py-1 rounded-full inline-block shadow-sm">
+                            🏫 โลกที่ 2: โรงเรียนสุดหรรษา
+                        </div>
+                        <div class="space-y-3" id="world-2-nodes"></div>
+                    </div>
+
+                    <!-- World 3: ชุมชนแสนดี (7-9) -->
+                    <div class="space-y-4">
+                        <div class="text-xs font-bold bg-emerald-400 text-white px-3 py-1 rounded-full inline-block shadow-sm">
+                            🌳 โลกที่ 3: ชุมชนน่าอยู่
+                        </div>
+                        <div class="space-y-3" id="world-3-nodes"></div>
+                    </div>
+
+                    <!-- World 4: มหานครไฮเทค (10-12) -->
+                    <div class="space-y-4">
+                        <div class="text-xs font-bold bg-cyan-400 text-white px-3 py-1 rounded-full inline-block shadow-sm">
+                            🏙️ โลกที่ 4: เมืองใหญ่ไฮเทค
+                        </div>
+                        <div class="space-y-3" id="world-4-nodes"></div>
+                    </div>
+
+                    <!-- World 5: ปราสาทอัลกอริทึม (13-15) -->
+                    <div class="space-y-4">
+                        <div class="text-xs font-bold bg-violet-400 text-white px-3 py-1 rounded-full inline-block shadow-sm">
+                            🏰 โลกที่ 5: ปราสาทเวทมนตร์แห่งโค้ด
+                        </div>
+                        <div class="space-y-3" id="world-5-nodes"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Bottom Info -->
+            <div class="glass-panel rounded-2xl p-2.5 text-center flex justify-between items-center">
+                <span class="text-xs text-teal-800 font-semibold" id="map-progress-text">ปลดล็อกแล้ว: 1 / 15 ด่าน</span>
+                <button onclick="changeScreen('screen-char-select')" class="px-3 py-1.5 bg-teal-500/20 text-teal-800 hover:bg-teal-500/30 rounded-xl text-xs font-bold transition">
+                    ⚙️ แก้ไขโปรไฟล์
+                </button>
+            </div>
+        </div>
+
+
+        <!-- ==================== SCREEN 4: GAME SCREEN ==================== -->
+        <div id="screen-game" class="absolute inset-0 flex flex-col justify-between p-4 z-10 transition-transform duration-500 translate-x-full">
+            <!-- HUD (Top Status bar) -->
+            <div class="glass-panel rounded-2xl p-3 flex justify-between items-center">
+                <!-- Back to Map -->
+                <button onclick="confirmExitToMap()" class="glass-btn p-1.5 rounded-xl text-teal-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+
+                <!-- Lives -->
+                <div class="flex items-center gap-1 bg-red-100/90 px-2.5 py-1 rounded-full border border-red-300">
+                    <span id="game-heart-container" class="flex gap-0.5">
+                        <!-- Hearts will be generated dynamically -->
+                    </span>
+                </div>
+
+                <!-- Stats: Gold & Stars -->
+                <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-0.5 bg-yellow-100/80 px-2 py-0.5 rounded-full border border-yellow-200 text-xs font-bold text-yellow-700">
+                        🪙 <span id="game-gold">0</span>
+                    </div>
+                    <div class="flex items-center gap-0.5 bg-indigo-100/80 px-2 py-0.5 rounded-full border border-indigo-200 text-xs font-bold text-indigo-700">
+                        ⭐ <span id="game-stars">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Teacher Hint Banner (Speeach Bubble) -->
+            <div class="flex gap-2 items-start my-2">
+                <!-- AI Teacher Character SVG -->
+                <div class="w-12 h-12 flex-shrink-0 bg-white/80 rounded-2xl border-2 border-teal-400 p-0.5 shadow-sm">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <!-- Robot Head -->
+                        <rect x="15" y="20" width="70" height="60" rx="15" fill="#4FD1C5" />
+                        <rect x="22" y="27" width="56" height="46" rx="10" fill="#2D3748" />
+                        <!-- Glasses / Visor -->
+                        <rect x="28" y="38" width="44" height="15" rx="5" fill="#63B3ED" />
+                        <line x1="28" y1="45" x2="72" y2="45" stroke="#E2E8F0" stroke-width="2" />
+                        <!-- Eyes Glow -->
+                        <circle cx="38" cy="45" r="3" fill="#FFF" />
+                        <circle cx="62" cy="45" r="3" fill="#FFF" />
+                        <!-- Smile -->
+                        <path d="M 45 62 Q 50 68 55 62" stroke="#4FD1C5" stroke-width="3" stroke-linecap="round" fill="none" />
+                        <!-- Antennas -->
+                        <circle cx="50" cy="12" r="5" fill="#FC8181" />
+                        <line x1="50" y1="12" x2="50" y2="20" stroke="#4FD1C5" stroke-width="4" />
+                    </svg>
+                </div>
+                <!-- Balloon -->
+                <div class="relative bg-white rounded-2xl p-3 shadow-md border-2 border-teal-100 flex-1">
+                    <!-- Triangle marker -->
+                    <div class="absolute left-[-8px] top-4 w-0 h-0 border-t-8 border-t-transparent border-r-8 border-r-white border-b-8 border-b-transparent"></div>
+                    <div class="text-[11px] font-bold text-teal-800 uppercase tracking-wider mb-0.5">ครูอัจฉริยะ (AI Helper)</div>
+                    <p class="text-xs text-slate-700 leading-relaxed font-mali" id="ai-bubble-text">จัดเรียงขั้นตอนด้านล่างนี้ให้ถูกต้องนะจ๊ะ!</p>
+                </div>
+            </div>
+
+            <!-- Stage Header Info -->
+            <div class="text-center bg-white/60 rounded-2xl p-2.5 mb-2 border border-white/40">
+                <div class="text-xs font-bold text-teal-800" id="game-stage-number">ด่านที่ 1</div>
+                <h4 class="text-sm font-bold text-slate-800 font-mali" id="game-stage-title">สระผมแสนสนุก</h4>
+            </div>
+
+            <!-- WORKSPACE (ช่องว่างสำหรับเรียงลำดับ) -->
+            <div class="flex-1 flex flex-col justify-between overflow-y-auto no-scrollbar gap-3 mb-2">
+                <!-- Dropzone Area (เป้าหมาย) -->
+                <div class="space-y-2">
+                    <div class="text-xs font-bold text-teal-900/80 ml-2">📥 ลำดับคำตอบของคุณ (เรียงจากบนลงล่าง):</div>
+                    <div id="dropzone-list" class="space-y-2 min-h-[150px] p-2 rounded-2xl border-2 border-dashed border-teal-300/40 bg-white/30 flex flex-col justify-center">
+                        <!-- Placed items will appear here -->
+                    </div>
+                </div>
+
+                <!-- Source Items Area (ตัวเลือกคำตอบที่สลับกัน) -->
+                <div class="space-y-2">
+                    <div class="text-xs font-bold text-teal-900/80 ml-2">🔀 ขั้นตอนต่างๆ (แตะเพื่อย้าย):</div>
+                    <div id="source-list" class="grid grid-cols-1 gap-2 p-2 rounded-2xl bg-teal-900/10 border border-white/20 min-h-[100px]">
+                        <!-- Option items will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button / Actions -->
+            <div class="mt-auto space-y-2">
+                <button id="btn-submit" onclick="checkCurrentAnswer()" class="w-full py-3 px-6 bg-slate-400 text-white font-bold text-base rounded-2xl shadow-md transition-all duration-150 cursor-not-allowed" disabled>
+                    กรุณาใส่ตัวเลือกให้ครบถ้วน ✏️
+                </button>
+            </div>
+        </div>
+
+
+        <!-- ==================== DIALOG/MODALS CONTAINER (Z-40) ==================== -->
+        
+        <!-- Modal: Correct Answer -->
+        <div id="modal-correct" class="absolute inset-0 bg-slate-950/60 z-40 flex items-center justify-center p-6 hidden">
+            <div class="glass-panel w-full max-w-[380px] rounded-3xl p-6 text-center space-y-4 border-2 border-emerald-300 animate-float">
+                <div class="w-20 h-20 mx-auto bg-emerald-100 rounded-full flex items-center justify-center text-4xl shadow-md">
+                    🎉
+                </div>
+                <h3 class="text-2xl font-bold text-emerald-800 font-mali">ถูกต้องแล้วจ้า!</h3>
+                <p class="text-sm text-slate-700 leading-relaxed">เก่งมากเลยเด็กๆ! ลำดับขั้นตอนถูกต้องตามหลักอัลกอริทึมแล้ว</p>
+                
+                <!-- Rewards info -->
+                <div class="bg-white/80 rounded-2xl p-3 grid grid-cols-2 gap-2 border border-emerald-100">
+                    <div class="text-center">
+                        <div class="text-xs text-slate-500">เหรียญทองที่ได้รับ</div>
+                        <div class="text-lg font-bold text-yellow-600">🪙 +15</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-slate-500">ดาวสะสมที่ได้รับ</div>
+                        <div class="text-lg font-bold text-indigo-600">⭐ +1</div>
+                    </div>
+                </div>
+
+                <button onclick="closeModalAndGoNext()" class="w-full py-3 px-6 bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95">
+                    ไปด่านต่อไปเลย! 🚀
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal: Game Over / Lives Zero -->
+        <div id="modal-gameover" class="absolute inset-0 bg-slate-950/80 z-40 flex items-center justify-center p-6 hidden">
+            <div class="glass-panel-dark w-full max-w-[380px] rounded-3xl p-6 text-center space-y-4 border-2 border-red-500">
+                <div class="w-20 h-20 mx-auto bg-red-900/50 rounded-full flex items-center justify-center text-4xl shadow-md">
+                    ❤️‍🩹
+                </div>
+                <h3 class="text-2xl font-bold text-red-400 font-mali">พลังชีวิตหมดลงแล้ว!</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">หัวใจของคุณหมดแล้ว แต่ไม่ต้องเสียใจไปนะ ลองมาเรียงลำดับใหม่อีกรอบกันเถอะ!</p>
+                
+                <button onclick="resetStageAndRetry()" class="w-full py-3 px-6 bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95">
+                    เติมหัวใจและเล่นอีกครั้ง 🔄
+                </button>
+                <button onclick="closeGameOverToMap()" class="w-full py-2 px-6 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-sm rounded-2xl transition">
+                    กลับไปเลือกด่าน
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal: Victory (All levels completed!) -->
+        <div id="modal-victory" class="absolute inset-0 bg-slate-950/70 z-40 flex items-center justify-center p-6 hidden">
+            <div class="glass-panel w-full max-w-[380px] rounded-3xl p-6 text-center space-y-4 border-2 border-yellow-300">
+                <div class="w-24 h-24 mx-auto animate-float">
+                    <!-- Cute Trophy SVG -->
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <path d="M 30 20 L 70 20 L 65 60 Q 50 75 35 60 Z" fill="#FBBF24" stroke="#D97706" stroke-width="3" />
+                        <path d="M 30 30 Q 15 35 25 50 Q 30 55 33 45" fill="none" stroke="#D97706" stroke-width="4" stroke-linecap="round" />
+                        <path d="M 70 30 Q 85 35 75 50 Q 70 55 67 45" fill="none" stroke="#D97706" stroke-width="4" stroke-linecap="round" />
+                        <rect x="42" y="72" width="16" height="15" fill="#D97706" />
+                        <ellipse cx="50" cy="85" rx="25" ry="8" fill="#FBBF24" stroke="#D97706" stroke-width="2" />
+                        <!-- Star in Trophy -->
+                        <polygon points="50,30 53,38 62,38 55,43 57,51 50,46 43,51 45,43 38,38 47,38" fill="#FFF" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-yellow-800 font-mali">อภิมหาแชมป์อัลกอริทึม!</h3>
+                <p class="text-sm text-slate-700 leading-relaxed">ยินดีด้วยคุณ <span id="victory-player-name" class="font-bold text-teal-800">กัปตันน้อย</span>! คุณได้ผ่านด่านผจญภัยอัลกอริทึมครบหมดทั้ง 15 ด่านแล้ว! คุณคือสุดยอดนักคิดเชิงคำนวณ!</p>
+                
+                <div class="bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl p-4 border border-yellow-200">
+                    <div class="text-xs font-semibold text-amber-800 mb-2">สรุปคะแนนสุดปังของคุณ:</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <div class="text-xs text-slate-500">เหรียญทองรวม</div>
+                            <div class="text-xl font-bold text-yellow-600">🪙 <span id="victory-gold">0</span></div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-500">ดาวทั้งหมด</div>
+                            <div class="text-xl font-bold text-indigo-600">⭐ <span id="victory-stars">0</span>/15</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="resetGameEntirely()" class="w-full py-3 px-6 bg-gradient-to-r from-yellow-400 to-amber-500 text-white font-bold text-lg rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95">
+                    เล่นใหม่อีกครั้ง 🔄
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SOUND EFFECTS (Web Audio API Synthesized - No External Assets Needed) -->
+    <script>
+        // Web Audio API helper to play educational game sounds
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+
+            // Resume audio context if suspended (browser security)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'correct') {
+                // Happy educational chime chord
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.2, now + 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'wrong') {
+                // Sad buzzer sound
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now); // A3
+                osc.frequency.linearRampToValueAtTime(130, now + 0.25); // Downwards
+                
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'victory') {
+                // Long fanfare chord
+                osc.type = 'triangle';
+                const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                notes.forEach((freq, idx) => {
+                    const subOsc = audioCtx.createOscillator();
+                    const subGain = audioCtx.createGain();
+                    subOsc.type = 'triangle';
+                    subOsc.frequency.setValueAtTime(freq, now + (idx * 0.06));
+                    
+                    subGain.gain.setValueAtTime(0.08, now + (idx * 0.06));
+                    subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.6 + (idx * 0.06));
+                    
+                    subOsc.connect(subGain);
+                    subGain.connect(audioCtx.destination);
+                    subOsc.start(now + (idx * 0.06));
+                    subOsc.stop(now + 0.8 + (idx * 0.06));
+                });
+            }
+        }
+    </script>
+
+    <!-- GAME DATA & ALGORITHMS (15 STAGES) -->
+    <script>
+        // 15 Educational Algorithm Stages
+        const stages = [
+            // WORLD 1: HOME (🏡)
+            {
+                id: 1,
+                world: 1,
+                title: "การแปรงฟันตอนเช้า 🪥",
+                hint: "ก่อนที่เราจะมีฟันขาวสะอาดใส เราต้องทำขั้นตอนไหนเป็นอย่างแรกและอย่างสุดท้ายจ๊ะ?",
+                options: [
+                    { id: "1_1", text: "หยิบแปรงและบีบยาสีฟัน" },
+                    { id: "1_2", text: "บ้วนปากด้วยน้ำสะอาด" },
+                    { id: "1_3", text: "ใช้แปรงขัดถูฟันให้ทั่วทุกซี่" }
+                ],
+                correctOrder: ["1_1", "1_3", "1_2"]
+            },
+            {
+                id: 2,
+                world: 1,
+                title: "ล้างมือป้องกันเชื้อโรค 🧼",
+                hint: "มาล้างมือให้ถูกวิธีก่อนกินอาหารกันเถอะ จะถูสบู่ก่อนหรือเปิดน้ำก่อนดีนะ?",
+                options: [
+                    { id: "2_1", text: "เปิดน้ำล้างมือให้เปียก" },
+                    { id: "2_2", text: "เช็ดมือให้แห้งด้วยผ้าสะอาด" },
+                    { id: "2_3", text: "ถูสบู่ให้ทั่วฝ่ามือเป็นเวลา 20 วินาที" },
+                    { id: "2_4", text: "ล้างฟองสบู่ออกด้วยน้ำไหล" }
+                ],
+                correctOrder: ["2_1", "2_3", "2_4", "2_2"]
+            },
+            {
+                id: 3,
+                world: 1,
+                title: "เมนูไข่เจียวแสนอร่อย 🍳",
+                hint: "จะทอดไข่เจียวฟูๆ ร้อนๆ ต้องเตรียมกระทะและตีไข่ในจานก่อนเอาลงไปทอดนะ!",
+                options: [
+                    { id: "3_1", text: "ตอกไข่ใส่ถ้วยแล้วตีให้เข้ากัน" },
+                    { id: "3_2", text: "เทไข่ลงในกระทะที่น้ำมันร้อน" },
+                    { id: "3_3", text: "ตักใส่จานพร้อมเสิร์ฟ" },
+                    { id: "3_4", text: "ตั้งกระทะแล้วใส่น้ำมันพืชลงไป" }
+                ],
+                correctOrder: ["3_1", "3_4", "3_2", "3_3"]
+            },
+            // WORLD 2: SCHOOL (🏫)
+            {
+                id: 4,
+                world: 2,
+                title: "การแต่งตัวไปโรงเรียน 👕",
+                hint: "เราควรสวมใส่เสื้อผ้าชิ้นไหนก่อนแต่งตัวเสร็จสมบูรณ์?",
+                options: [
+                    { id: "4_1", text: "ใส่เสื้อนักเรียน" },
+                    { id: "4_2", text: "ใส่กางเกงหรือกระโปรง" },
+                    { id: "4_3", text: "ใส่ถุงเท้าและรองเท้า" },
+                    { id: "4_4", text: "ใส่เข็มขัดให้เรียบร้อย" }
+                ],
+                correctOrder: ["4_1", "4_2", "4_4", "4_3"]
+            },
+            {
+                id: 5,
+                world: 2,
+                title: "จัดกระเป๋านักเรียน 🎒",
+                hint: "ก่อนที่เราจะสะพายกระเป๋าเดินออกจากบ้าน เราต้องเรียงลำดับยังไงนะ?",
+                options: [
+                    { id: "5_1", text: "ดูตารางเรียนของวันพรุ่งนี้" },
+                    { id: "5_2", text: "หยิบหนังสือและสมุดตามตารางใส่กระเป๋า" },
+                    { id: "5_3", text: "รูดซิปปิดกระเป๋าให้สนิท" }
+                ],
+                correctOrder: ["5_1", "5_2", "5_3"]
+            },
+            {
+                id: 6,
+                world: 2,
+                title: "ทำความสะอาดห้องเรียน 🧹",
+                hint: "เมื่อต้องการทำความสะอาดห้อง เราต้องกวาดฝุ่นจากที่สูงลงสู่ที่ต่ำนะเด็กๆ!",
+                options: [
+                    { id: "6_1", text: "เช็ดฝุ่นบนโต๊ะและกระดานดำ" },
+                    { id: "6_2", text: "กวาดขยะบนพื้นรวมกันเป็นกอง" },
+                    { id: "6_3", text: "ตักขยะไปทิ้งถังขยะภายนอก" },
+                    { id: "6_4", text: "ถูพื้นห้องเรียนด้วยไม้ถูพื้น" }
+                ],
+                correctOrder: ["6_1", "6_2", "6_3", "6_4"]
+            },
+            // WORLD 3: COMMUNITY (🌳)
+            {
+                id: 7,
+                world: 3,
+                title: "การข้ามถนนอย่างปลอดภัย 🚶‍♂️",
+                hint: "ข้ามถนนตรงทางม้าลายอย่างปลอดภัย อย่าลืมหันมองซ้ายขวาให้ดีก่อนเดินล่ะ!",
+                options: [
+                    { id: "7_1", text: "หยุดยืนรอบนทางเท้าข้างทางม้าลาย" },
+                    { id: "7_2", text: "มองขวา มองซ้าย และมองขวาอีกครั้ง" },
+                    { id: "7_3", text: "เมื่อรถหยุดนิ่งสนิท จึงเดินข้ามอย่างระมัดระวัง" }
+                ],
+                correctOrder: ["7_1", "7_2", "7_3"]
+            },
+            {
+                id: 8,
+                world: 3,
+                title: "การส่งจดหมายหาคุณยาย ✉️",
+                hint: "เขียนจดหมายเสร็จแล้ว ต้องทำอย่างไรต่อถึงจะส่งให้บุรุษไปรษณีย์ได้?",
+                options: [
+                    { id: "8_1", text: "เขียนข้อความลงในจดหมาย" },
+                    { id: "8_2", text: "พับใส่ซองจดหมายและปิดกาว" },
+                    { id: "8_3", text: "จ่าหน้าซองชื่อผู้รับและติดแสตมป์" },
+                    { id: "8_4", text: "หย่อนจดหมายลงในตู้ไปรษณีย์สีแดง" }
+                ],
+                correctOrder: ["8_1", "8_2", "8_3", "8_4"]
+            },
+            {
+                id: 9,
+                world: 3,
+                title: "แยกขยะช่วยโลกสีเขียว ♻️",
+                hint: "การแยกขยะที่ถูกต้องช่วยให้การรีไซเคิลง่ายขึ้นมากเลย!",
+                options: [
+                    { id: "9_1", text: "สังเกตประเภทของขยะในมือ" },
+                    { id: "9_2", text: "เดินไปที่ถังขยะแยกประเภท" },
+                    { id: "9_3", text: "ทิ้งขยะลงถังให้ตรงกับสีและป้ายระบุ" }
+                ],
+                correctOrder: ["9_1", "9_2", "9_3"]
+            },
+            // WORLD 4: TECH CITY (🏙️)
+            {
+                id: 10,
+                world: 4,
+                title: "ขึ้นรถไฟฟ้าใต้ดิน MRT 🚇",
+                hint: "มาเดินทางด้วยรถไฟฟ้าไฮเทคกัน! เราต้องมีเหรียญโดยสารก่อนเข้าสถานีนะ",
+                options: [
+                    { id: "10_1", text: "เลือกสถานีปลายทางที่ตู้ขายตั๋ว" },
+                    { id: "10_2", text: "หยอดเหรียญ/ธนบัตรเพื่อซื้อตั๋วโดยสาร" },
+                    { id: "10_3", text: "แตะเหรียญโดยสารที่ประตูเพื่อผ่านเข้าสถานี" },
+                    { id: "10_4", text: "เดินลงไปรอรถไฟฟ้าที่ชานชาลา" }
+                ],
+                correctOrder: ["10_1", "10_2", "10_3", "10_4"]
+            },
+            {
+                id: 11,
+                world: 4,
+                title: "กดเงินจากตู้ ATM อัตโนมัติ 🏦",
+                hint: "ถ้าต้องการกดเงินสดจากตู้อย่างปลอดภัย ต้องเรียงขั้นตอนอย่างไรดี?",
+                options: [
+                    { id: "11_1", text: "เสียบบัตร ATM เข้าช่องรับบัตร" },
+                    { id: "11_2", text: "ใส่รหัสผ่านส่วนตัว 6 หลัก" },
+                    { id: "11_3", text: "เลือกเมนูถอนเงินและระบุจำนวนเงิน" },
+                    { id: "11_4", text: "รับเงินสดและรับบัตรคืนจากตู้" }
+                ],
+                correctOrder: ["11_1", "11_2", "11_3", "11_4"]
+            },
+            {
+                id: 12,
+                world: 4,
+                title: "สั่งชานมไข่มุกผ่านตู้อัจฉริยะ 🧋",
+                hint: "หิวน้ำจังเลย! มาลองสั่งชาไข่มุกหวานน้อยผ่านตู้อัตโนมัติกันเถอะ",
+                options: [
+                    { id: "12_1", text: "กดเลือกเมนูชานมไข่มุกบนหน้าจอ" },
+                    { id: "12_2", text: "เลือกความหวานลดลงเหลือ 50%" },
+                    { id: "12_3", text: "จ่ายเงินด้วยการสแกน QR Code" },
+                    { id: "12_4", text: "รอรับแก้วชานมหวานชื่นใจจากช่องรับสินค้า" }
+                ],
+                correctOrder: ["12_1", "12_2", "12_3", "12_4"]
+            },
+            // WORLD 5: CASTLE (🏰)
+            {
+                id: 13,
+                world: 5,
+                title: "การจุดคบเพลิงเวทมนตร์ 🕯️",
+                hint: "วิหารเวทมนตร์แห่งโค้ดมีความมืดมิด ต้องจุดไฟเรียงตามลำดับพลังความร้อน!",
+                options: [
+                    { id: "13_1", text: "ขูดไม้ขีดไฟกับข้างกล่องให้เกิดประกาย" },
+                    { id: "13_2", text: "จ่อเปลวไฟไปที่ปลายคบเพลิง" },
+                    { id: "13_3", text: "หยิบไม้ขีดไฟออกจากกล่อง" }
+                ],
+                correctOrder: ["13_3", "13_1", "13_2"]
+            },
+            {
+                id: 14,
+                world: 5,
+                title: "ปรุงยาต้านมังกรไฟ 🧪",
+                hint: "ปรุงยาในหม้อทองเหลืองเพื่อเพิ่มพลังต้านทานความร้อนระอุ!",
+                options: [
+                    { id: "14_1", text: "เทน้ำมนต์ศักดิ์สิทธิ์ลงในหม้อต้ม" },
+                    { id: "14_2", text: "ใส่สมุนไพรสีฟ้าเย็นยะเยือกลงไป" },
+                    { id: "14_3", text: "คนยาตามเข็มนาฬิกาครบ 3 รอบ" },
+                    { id: "14_4", text: "ตักน้ำยาวิเศษใส่ขวดแก้วพกติดตัว" }
+                ],
+                correctOrder: ["14_1", "14_2", "14_3", "14_4"]
+            },
+            {
+                id: 15,
+                world: 5,
+                title: "ไขปริศนาเปิดประตูวิหารทองคำ 🔑",
+                hint: "ด่านสุดท้ายแล้ว! ลำดับคีย์ลอจิกปลดล็อกประตูปราสาทเวทมนตร์",
+                options: [
+                    { id: "15_1", text: "ปัดกวาดฝุ่นรอบช่องเสียบกุญแจโบราณ" },
+                    { id: "15_2", text: "สอดกุญแจทองคำเข้าไปในช่อง" },
+                    { id: "15_3", text: "หมุนกุญแจไปทางขวาจนมีเสียง 'คลิก'" },
+                    { id: "15_4", text: "ผลักประตูไม้บานใหญ่เพื่อผ่านเข้าไปสำเร็จ" }
+                ],
+                correctOrder: ["15_1", "15_2", "15_3", "15_4"]
+            }
+        ];
+    </script>
+
+    <!-- AVATAR SVGS BUILDER -->
+    <script>
+        const Avatars = {
+            boy: `<svg viewBox="0 0 100 100" class="w-full h-full">
+                    <circle cx="50" cy="50" r="40" fill="#FFE0B2"/>
+                    <path d="M25 40 Q50 15 75 40" fill="#5D4037"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#5D4037" stroke-width="3"/>
+                    <circle cx="38" cy="48" r="4" fill="#3E2723"/>
+                    <circle cx="62" cy="48" r="4" fill="#3E2723"/>
+                    <circle cx="38" cy="46" r="1.5" fill="white"/>
+                    <circle cx="62" cy="46" r="1.5" fill="white"/>
+                    <circle cx="30" cy="55" r="4" fill="#FF8A80" opacity="0.6"/>
+                    <circle cx="70" cy="55" r="4" fill="#FF8A80" opacity="0.6"/>
+                    <path d="M44 62 Q50 68 56 62" stroke="#3E2723" stroke-width="3" stroke-linecap="round" fill="none"/>
+                  </svg>`,
+            girl: `<svg viewBox="0 0 100 100" class="w-full h-full">
+                    <circle cx="50" cy="50" r="40" fill="#FFE0B2"/>
+                    <!-- Hair -->
+                    <path d="M20 50 C20 20, 80 20, 80 50 C80 50, 85 45, 80 30 C75 15, 25 15, 20 30 C15 45, 20 50, 20 50 Z" fill="#D81B60"/>
+                    <circle cx="20" cy="55" r="8" fill="#D81B60"/>
+                    <circle cx="80" cy="55" r="8" fill="#D81B60"/>
+                    <!-- Face outline & eyes -->
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#D81B60" stroke-width="3"/>
+                    <circle cx="38" cy="48" r="4" fill="#263238"/>
+                    <circle cx="62" cy="48" r="4" fill="#263238"/>
+                    <circle cx="40" cy="46" r="1.5" fill="white"/>
+                    <circle cx="64" cy="46" r="1.5" fill="white"/>
+                    <!-- Blush -->
+                    <circle cx="30" cy="56" r="4" fill="#FF8A80" opacity="0.7"/>
+                    <circle cx="70" cy="56" r="4" fill="#FF8A80" opacity="0.7"/>
+                    <path d="M44 62 Q50 68 56 62" stroke="#263238" stroke-width="3" stroke-linecap="round" fill="none"/>
+                  </svg>`,
+            robot: `<svg viewBox="0 0 100 100" class="w-full h-full">
+                    <rect x="15" y="15" width="70" height="70" rx="18" fill="#E0F7FA" stroke="#00838F" stroke-width="4"/>
+                    <!-- Visor/Screen -->
+                    <rect x="24" y="26" width="52" height="30" rx="10" fill="#006064"/>
+                    <!-- Eyes Glow -->
+                    <circle cx="38" cy="41" r="5" fill="#80DEEA"/>
+                    <circle cx="62" cy="41" r="5" fill="#80DEEA"/>
+                    <!-- Antennas -->
+                    <line x1="50" y1="15" x2="50" y2="5" stroke="#00838F" stroke-width="4"/>
+                    <circle cx="50" cy="5" r="5" fill="#FF5252"/>
+                    <!-- Mouth -->
+                    <path d="M35 68 H65" stroke="#00838F" stroke-width="4" stroke-linecap="round"/>
+                    <!-- Cheek LEDs -->
+                    <circle cx="22" cy="68" r="3" fill="#00E676"/>
+                    <circle cx="78" cy="68" r="3" fill="#00E676"/>
+                  </svg>`,
+            cat: `<svg viewBox="0 0 100 100" class="w-full h-full">
+                    <circle cx="50" cy="52" r="38" fill="#ECEFF1" stroke="#37474F" stroke-width="3"/>
+                    <!-- Ears -->
+                    <polygon points="18,25 38,40 18,50" fill="#CFD8DC" stroke="#37474F" stroke-width="3" stroke-linejoin="round"/>
+                    <polygon points="82,25 62,40 82,50" fill="#CFD8DC" stroke="#37474F" stroke-width="3" stroke-linejoin="round"/>
+                    <polygon points="22,30 34,40 22,46" fill="#FF8A80"/>
+                    <polygon points="78,30 66,40 78,46" fill="#FF8A80"/>
+                    <!-- Eyes -->
+                    <ellipse cx="36" cy="48" rx="4" ry="6" fill="#37474F"/>
+                    <ellipse cx="64" cy="48" rx="4" ry="6" fill="#37474F"/>
+                    <circle cx="37" cy="46" r="1.5" fill="white"/>
+                    <circle cx="65" cy="46" r="1.5" fill="white"/>
+                    <!-- Nose & Mouth -->
+                    <polygon points="50,56 46,52 54,52" fill="#FF8A80"/>
+                    <path d="M50 56 Q47 62 44 60" stroke="#37474F" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <path d="M50 56 Q53 62 56 60" stroke="#37474F" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <!-- Whiskers -->
+                    <line x1="20" y1="58" x2="32" y2="58" stroke="#90A4AE" stroke-width="2"/>
+                    <line x1="18" y1="64" x2="30" y2="62" stroke="#90A4AE" stroke-width="2"/>
+                    <line x1="80" y1="58" x2="68" y2="58" stroke="#90A4AE" stroke-width="2"/>
+                    <line x1="82" y1="64" x2="70" y2="62" stroke="#90A4AE" stroke-width="2"/>
+                  </svg>`
+        };
+
+        // Render Avatars inside the select grid
+        document.getElementById('svg-avatar-boy').innerHTML = Avatars.boy;
+        document.getElementById('svg-avatar-girl').innerHTML = Avatars.girl;
+        document.getElementById('svg-avatar-robot').innerHTML = Avatars.robot;
+        document.getElementById('svg-avatar-cat').innerHTML = Avatars.cat;
+    </script>
+
+    <!-- GAMEPLAY CONTROLLER & LOGIC -->
+    <script>
+        // State Management
+        let gameState = {
+            playerName: "กัปตันน้อย",
+            avatar: "boy",
+            gold: 0,
+            stars: 0,
+            unlockedStages: 1, // Start with Stage 1
+            currentStage: null,
+            lives: 3,
+            selectedOrder: [] // Current sorted options chosen by user in the gameplay
+        };
+
+        // Screen transition system
+        function changeScreen(screenId) {
+            playSound('click');
+            // Hide all screen divs inside the main container
+            const screens = ['screen-splash', 'screen-char-select', 'screen-map', 'screen-game'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('translate-x-full', '-translate-x-full');
+                    el.classList.add('translate-x-0');
+                } else {
+                    // Position others out of view
+                    el.classList.add('translate-x-full');
+                    el.classList.remove('translate-x-0');
+                }
+            });
+        }
+
+        // Selected Avatar Logic
+        function selectAvatar(avatarName) {
+            playSound('click');
+            gameState.avatar = avatarName;
+            
+            // Toggle highlight in UI
+            document.querySelectorAll('.avatar-card').forEach(card => {
+                card.classList.remove('border-teal-400', 'scale-105');
+                card.classList.add('border-transparent', 'bg-white/60');
+            });
+
+            const activeCard = document.getElementById(`avatar-${avatarName}`);
+            activeCard.classList.remove('border-transparent', 'bg-white/60');
+            activeCard.classList.add('border-teal-400', 'scale-105', 'bg-white/90');
+        }
+
+        // Confirm user profile in Character Select
+        function confirmCharacter() {
+            const nameInput = document.getElementById('player-name-input').value.trim();
+            if (nameInput) {
+                gameState.playerName = nameInput;
+            } else {
+                gameState.playerName = "กัปตันน้อย";
+            }
+            
+            // Build Status Header details
+            document.getElementById('map-user-name').innerText = gameState.playerName;
+            document.getElementById('map-user-avatar').innerHTML = Avatars[gameState.avatar];
+            document.getElementById('map-user-gold').innerText = gameState.gold;
+            document.getElementById('map-user-stars').innerText = gameState.stars;
+
+            buildWorldMap();
+            changeScreen('screen-map');
+        }
+
+        // Build 15 level nodes on Map Screen
+        function buildWorldMap() {
+            // Clean container nodes first
+            document.getElementById('world-1-nodes').innerHTML = '';
+            document.getElementById('world-2-nodes').innerHTML = '';
+            document.getElementById('world-3-nodes').innerHTML = '';
+            document.getElementById('world-4-nodes').innerHTML = '';
+            document.getElementById('world-5-nodes').innerHTML = '';
+
+            let unlockedCount = 0;
+
+            stages.forEach(stage => {
+                const isUnlocked = stage.id <= gameState.unlockedStages;
+                const isCompleted = stage.id < gameState.unlockedStages;
+                if (isUnlocked) unlockedCount++;
+
+                // Build Node HTML
+                const nodeHtml = `
+                    <div onclick="${isUnlocked ? `startStage(${stage.id})` : ''}" class="flex items-center gap-3 p-3 rounded-2xl transition-all duration-150 ${isUnlocked ? 'bg-white/80 border-2 border-teal-200 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]' : 'bg-slate-400/25 border-2 border-dashed border-slate-400/30 opacity-60 pointer-events-none'}">
+                        <!-- Node number ball -->
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-md ${isCompleted ? 'bg-emerald-400 text-white' : (isUnlocked ? 'bg-teal-500 text-white animate-pulse' : 'bg-slate-300 text-slate-500')}">
+                            ${isCompleted ? '✓' : stage.id}
+                        </div>
+                        <!-- Node texts -->
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs font-bold ${isUnlocked ? 'text-teal-900/80' : 'text-slate-500'}">ด่านที่ ${stage.id}</div>
+                            <div class="text-sm font-bold truncate ${isUnlocked ? 'text-teal-950 font-mali' : 'text-slate-500'}">${stage.title}</div>
+                        </div>
+                        <!-- Status indicator icon -->
+                        <div>
+                            ${isCompleted ? '⭐' : (isUnlocked ? '🔑' : '🔒')}
+                        </div>
+                    </div>
+                `;
+
+                // Append to correct world
+                document.getElementById(`world-${stage.world}-nodes`).insertAdjacentHTML('beforeend', nodeHtml);
+            });
+
+            // Update bottom stats
+            document.getElementById('map-progress-text').innerText = `ปลดล็อกแล้ว: ${unlockedCount} / 15 ด่าน`;
+        }
+
+        // Load specific level and open Game Screen
+        function startStage(stageId) {
+            playSound('click');
+            const stage = stages.find(s => s.id === stageId);
+            if (!stage) return;
+
+            gameState.currentStage = stage;
+            gameState.selectedOrder = []; // Reset selected answer
+            gameState.lives = 3; // Reset lives for new stage retry
+
+            // Update Game UI Stats
+            document.getElementById('game-stage-number').innerText = `ด่านที่ ${stage.id}`;
+            document.getElementById('game-stage-title').innerText = stage.title;
+            document.getElementById('ai-bubble-text').innerText = stage.hint;
+            document.getElementById('game-gold').innerText = gameState.gold;
+            document.getElementById('game-stars').innerText = gameState.stars;
+
+            updateHeartsUI();
+            renderOptions();
+            
+            changeScreen('screen-game');
+        }
+
+        // Render Lives Hearts
+        function updateHeartsUI() {
+            const container = document.getElementById('game-heart-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < gameState.lives) {
+                    // Full Heart SVG
+                    container.insertAdjacentHTML('beforeend', `
+                        <svg class="w-6 h-6 text-red-500 drop-shadow" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    `);
+                } else {
+                    // Broken/Empty Heart SVG
+                    container.insertAdjacentHTML('beforeend', `
+                        <svg class="w-6 h-6 text-slate-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" opacity="0.4"/>
+                        </svg>
+                    `);
+                }
+            }
+        }
+
+        // Render workspace & options
+        function renderOptions() {
+            const stage = gameState.currentStage;
+            const sourceList = document.getElementById('source-list');
+            const dropzoneList = document.getElementById('dropzone-list');
+            const btnSubmit = document.getElementById('btn-submit');
+
+            // 1. Clear elements
+            sourceList.innerHTML = '';
+            dropzoneList.innerHTML = '';
+
+            // 2. Render options that are NOT chosen yet
+            // To make it fun, we shuffle options only on initial render of a stage
+            if (gameState.selectedOrder.length === 0 && !stage.shuffledOptions) {
+                stage.shuffledOptions = [...stage.options].sort(() => Math.random() - 0.5);
+            } else if (gameState.selectedOrder.length === 0) {
+                // If reset, reshuffle
+                stage.shuffledOptions = [...stage.options].sort(() => Math.random() - 0.5);
+            }
+
+            const unselected = stage.shuffledOptions.filter(opt => !gameState.selectedOrder.includes(opt.id));
+
+            if (unselected.length === 0) {
+                sourceList.innerHTML = `
+                    <div class="text-center py-4 text-xs font-semibold text-emerald-800">
+                        ✨ จัดวางครบทุกขั้นตอนแล้ว! กดปุ่มตรวจสอบเลย
+                    </div>
+                `;
+            } else {
+                unselected.forEach(opt => {
+                    const itemHtml = `
+                        <div onclick="selectOption('${opt.id}')" class="p-3 bg-white hover:bg-teal-50 border border-teal-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 cursor-pointer flex items-center justify-between transition active:scale-95">
+                            <span>${opt.text}</span>
+                            <span class="text-teal-400">➕</span>
+                        </div>
+                    `;
+                    sourceList.insertAdjacentHTML('beforeend', itemHtml);
+                });
+            }
+
+            // 3. Render dropzone targets
+            if (gameState.selectedOrder.length === 0) {
+                dropzoneList.innerHTML = `
+                    <div class="text-center py-6 text-slate-500 text-xs">
+                        👉 ยังไม่มีขั้นตอนที่เลือก<br>แตะที่ตัวเลือกด้านล่างเพื่อเริ่มจัดเรียงลำดับ
+                    </div>
+                `;
+            } else {
+                gameState.selectedOrder.forEach((id, index) => {
+                    const opt = stage.options.find(o => o.id === id);
+                    const dropHtml = `
+                        <div onclick="deselectOption('${id}')" class="p-3 bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-emerald-300 rounded-xl shadow-sm text-sm font-semibold text-teal-900 cursor-pointer flex items-center gap-3 transition hover:scale-[1.01] active:scale-95">
+                            <!-- Index Badge -->
+                            <span class="w-6 h-6 rounded-full bg-emerald-500 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">${index + 1}</span>
+                            <span class="flex-1">${opt.text}</span>
+                            <span class="text-rose-400 text-xs">✖</span>
+                        </div>
+                    `;
+                    dropzoneList.insertAdjacentHTML('beforeend', dropHtml);
+                });
+            }
+
+            // 4. Update Submit Button Status
+            if (gameState.selectedOrder.length === stage.options.length) {
+                btnSubmit.disabled = false;
+                btnSubmit.className = "w-full py-4 px-6 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-lg rounded-2xl shadow-lg shadow-teal-300/40 cursor-pointer hover:scale-[1.02] active:scale-95 transition-all duration-200 font-mali";
+                btnSubmit.innerText = "ตรวจสอบคำตอบเลย! 🔍";
+            } else {
+                btnSubmit.disabled = true;
+                btnSubmit.className = "w-full py-3 px-6 bg-slate-300 text-slate-500 font-bold text-base rounded-2xl shadow-inner cursor-not-allowed transition-all duration-200";
+                btnSubmit.innerText = "กรุณาใส่ตัวเลือกให้ครบถ้วน ✏️";
+            }
+        }
+
+        // Action when user taps option to place it in dropzone
+        function selectOption(id) {
+            playSound('click');
+            if (!gameState.selectedOrder.includes(id)) {
+                gameState.selectedOrder.push(id);
+                renderOptions();
+            }
+        }
+
+        // Action when user taps placed option to remove it
+        function deselectOption(id) {
+            playSound('click');
+            gameState.selectedOrder = gameState.selectedOrder.filter(item => item !== id);
+            renderOptions();
+        }
+
+        // Check Answer Algorithmic Order
+        function checkCurrentAnswer() {
+            const stage = gameState.currentStage;
+            let isCorrect = true;
+
+            for (let i = 0; i < stage.correctOrder.length; i++) {
+                if (gameState.selectedOrder[i] !== stage.correctOrder[i]) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                // Play correct sound
+                playSound('correct');
+                // Launch Confetti celebration!
+                startConfetti();
+                // Show Success Modal
+                document.getElementById('modal-correct').classList.remove('hidden');
+                
+                // Add Rewards
+                gameState.gold += 15;
+                gameState.stars += 1;
+
+                // Sync level progress
+                if (stage.id === gameState.unlockedStages) {
+                    gameState.unlockedStages++;
+                }
+            } else {
+                // Wrong answer flow
+                playSound('wrong');
+                // Shake screen effect
+                const container = document.getElementById('game-container');
+                container.classList.add('animate-shake');
+                setTimeout(() => {
+                    container.classList.remove('animate-shake');
+                }, 400);
+
+                // Reduce heart live
+                gameState.lives--;
+                updateHeartsUI();
+
+                // Dynamic funny prompt from AI Helper
+                const comments = [
+                    "โอ๊ะโอ! ลำดับแบบนั้นยังไม่เข้าล็อก ลองคิดใหม่อีกรอบนะจ๊ะ!",
+                    "อ๊ะ! ลองอ่านคำใบ้ของครูดีๆ มีขั้นตอนนี้ที่สลับที่กันอยู่!",
+                    "สู้ๆ น้าเด็กๆ! ลองเริ่มจากขั้นตอนที่น่าจะเป็นอันแรกสุดก่อนสิจ๊ะ"
+                ];
+                document.getElementById('ai-bubble-text').innerText = comments[Math.floor(Math.random() * comments.length)];
+
+                if (gameState.lives <= 0) {
+                    // Trigger Game Over Modal
+                    setTimeout(() => {
+                        document.getElementById('modal-gameover').classList.remove('hidden');
+                    }, 500);
+                }
+            }
+        }
+
+        // Modal triggers
+        function closeModalAndGoNext() {
+            document.getElementById('modal-correct').classList.add('hidden');
+            stopConfetti();
+
+            if (gameState.currentStage.id >= 15) {
+                // Final Win Game Completed!
+                document.getElementById('victory-player-name').innerText = gameState.playerName;
+                document.getElementById('victory-gold').innerText = gameState.gold;
+                document.getElementById('victory-stars').innerText = gameState.stars;
+                
+                playSound('victory');
+                document.getElementById('modal-victory').classList.remove('hidden');
+            } else {
+                // Go to world map
+                buildWorldMap();
+                changeScreen('screen-map');
+            }
+        }
+
+        function resetStageAndRetry() {
+            document.getElementById('modal-gameover').classList.add('hidden');
+            gameState.lives = 3;
+            gameState.selectedOrder = []; // Reset answer order
+            updateHeartsUI();
+            
+            // Reshuffle options for variety on retry
+            if (gameState.currentStage) {
+                gameState.currentStage.shuffledOptions = [...gameState.currentStage.options].sort(() => Math.random() - 0.5);
+            }
+            
+            renderOptions();
+        }
+
+        function closeGameOverToMap() {
+            document.getElementById('modal-gameover').classList.add('hidden');
+            buildWorldMap();
+            changeScreen('screen-map');
+        }
+
+        function confirmExitToMap() {
+            playSound('click');
+            buildWorldMap();
+            changeScreen('screen-map');
+        }
+
+        function resetGameEntirely() {
+            document.getElementById('modal-victory').classList.add('hidden');
+            gameState.gold = 0;
+            gameState.stars = 0;
+            gameState.unlockedStages = 1;
+            gameState.currentStage = null;
+            changeScreen('screen-splash');
+        }
+    </script>
+
+    <!-- CONFETTI ANIMATION SYSTEM -->
+    <script>
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId = null;
+        let confettiActive = false;
+        let confettiArray = [];
+
+        function resizeConfettiCanvas() {
+            const container = document.getElementById('game-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeConfettiCanvas);
+        resizeConfettiCanvas();
+
+        class ConfettiParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -canvas.height;
+                this.size = Math.random() * 8 + 6;
+                this.speedY = Math.random() * 3 + 2;
+                this.speedX = Math.random() * 2 - 1;
+                this.color = `hsl(${Math.random() * 360}, 90%, 65%)`;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 4 - 2;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y > canvas.height) {
+                    this.y = -20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                ctx.restore();
+            }
+        }
+
+        function startConfetti() {
+            resizeConfettiCanvas();
+            confettiArray = [];
+            for (let i = 0; i < 65; i++) {
+                confettiArray.push(new ConfettiParticle());
+            }
+            confettiActive = true;
+            animateConfetti();
+        }
+
+        function animateConfetti() {
+            if (!confettiActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            confettiArray.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            animationFrameId = requestAnimationFrame(animateConfetti);
+        }
+
+        function stopConfetti() {
+            confettiActive = false;
+            cancelAnimationFrame(animationFrameId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+
+    <!-- INITIAL START -->
+    <script>
+        // Start the game by selecting Avatar first on default load
+        selectAvatar('boy');
+    </script>
+</body>
+</html>
